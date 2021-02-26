@@ -1,0 +1,8 @@
+__pycache__
+.vscode/*
+tf2.2_env/*
+models/*
+
+yolov3.weights
+*.png
+*.mp4
