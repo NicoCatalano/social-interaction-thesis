@@ -9,4 +9,8 @@ pip install tqdm
 pip install pandas
 sudo apt-get install python3-tk
 
+#To activate virtual enviorment
+source tf2.2-env/bin/activate
+
+#when finished
 deactivate tf2.2-env

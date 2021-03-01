@@ -120,6 +120,14 @@ class GazeDetector:
         
         #Get a ortogal to tha face plane - x1 and x2 are two points definig the line in the projected space
         #TODO: remove and make a line going out from eyes
+       
+        
+        # Calculate euler angle
+        rotation_mat, _ = cv2.Rodrigues(rotation_vector)
+        pose_mat = cv2.hconcat((rotation_mat, translation_vector))
+        _, _, _, _, _, _, euler_angles = cv2.decomposeProjectionMatrix(pose_mat)
+
+
         x1, x2 = FaceMarksDetector.computeLineOfSigth(img, rotation_vector, translation_vector, self.camera_matrix)
 
         if self.debug > 0:
@@ -132,15 +140,15 @@ class GazeDetector:
         if self.debug > 0:
             self.mark_detector.draw_marks(img, marks, color=(0, 255, 0))
             
-        return marks, (x1, x2)
+        return marks, (x1, x2) , euler_angles
 
 
 # Main for testing pourpose
 
 """ TESTING images """
-if __name__ == "__main__":
+def imgTesting(sysArgv):
     threshold = 0.5
-    inputFileName = str(sys.argv[1])
+    inputFileName = str(sysArgv)
     img = cv2.imread(inputFileName)
 
     gd = GazeDetector(img.shape,3)
@@ -148,7 +156,7 @@ if __name__ == "__main__":
     faceboxes = gd.get_faceboxes(img, threshold)
     print("Face detected:",len(faceboxes))
     for facebox in faceboxes:
-        x1, x2 = gd.getGazeDirection(img,facebox)
+        x1, x2,  euler_angle = gd.getGazeDirection(img,facebox)
 
     cv2.imshow('img', img)
     
@@ -157,16 +165,15 @@ if __name__ == "__main__":
     cv2.destroyAllWindows()
 
 """ TESTING video """
-"""
-if __name__ == "__main__":
+def videoTesting(sysArgv):
     tf.get_logger().setLevel('ERROR')
 
 
-    if len(sys.argv) != 2:
-        print("usage:",sys.argv[0],"videoStream (filePath or webcamID)")
+    if len(sysArgv) != 2:
+        print("usage:",sysArgv[0],"videoStream (filePath or webcamID)")
         exit()
 
-    streamFilename = sys.argv[1]
+    streamFilename = sysArgv[1]
     validVideo, cap = isValidVideoStream(streamFilename)
 
     if not (validVideo):
@@ -180,9 +187,10 @@ if __name__ == "__main__":
     while True:
         ret, img = cap.read()
         if ret == True:
-            faceboxes = gd.get_faceboxes(img, threshold)
+            faceboxes = gd.get_faceboxes(img, threshold=0.5)
             for facebox in faceboxes:
-                x1, x2 = gd.getGazeDirection(img,facebox)
+                x1, x2, euler_angle = gd.getGazeDirection(img,facebox)
+                print("euler angles:",euler_angle)
 
             cv2.imshow('img', img)
 
@@ -196,4 +204,8 @@ if __name__ == "__main__":
     cv2.destroyAllWindows()
     cap.release()
 
-"""
+
+
+if __name__ == "__main__":
+    #imgTesting(sys.argv)
+    videoTesting(sys.argv)

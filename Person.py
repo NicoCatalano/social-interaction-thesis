@@ -9,6 +9,7 @@ class Person:
         #tuple of points defining a line ortogonal to the face - line of sigth (start point and end point) 
         self.lineOfSigth = None
         self.markpoints = None
+        self.euler_angles = None
     
     def hasFace(self):
         if self.lineOfSigth is None:

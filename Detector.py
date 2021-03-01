@@ -82,9 +82,10 @@ def detectPeopleGroups(net, gd, image, faceTrashold):
         #assigning each face to the corresponding person    
         for facebox in faceboxes:
             if p.box.contains(facebox) :
-                marks, lineOfSigth = gd.getGazeDirection(image,facebox)
+                marks, lineOfSigth, euler_angles = gd.getGazeDirection(image,facebox)
                 p.markpoints = marks
                 p.lineOfSigth = lineOfSigth
+                p.euler_angles = euler_angles
                 
                 if debug > 2 :
                     print("Face detected in ",facebox)
